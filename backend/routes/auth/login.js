@@ -19,7 +19,7 @@ const login = async (_req, _res, _next) => {
     passport.authenticate('login', {session: false}, (err, user, info) => {
       try {
         if (err || !user) {
-          return _res.status(400).json({
+          return _res.status(401).json({
             success: false,
             message: info,
           });
@@ -27,7 +27,7 @@ const login = async (_req, _res, _next) => {
   
         _req.login(user, {session: false}, async error => {
           if (error) {
-            return _res.status(400).json({
+            return _res.status(401).json({
                 success: false,
                 message: 'Error 100'
             });
@@ -40,9 +40,9 @@ const login = async (_req, _res, _next) => {
           });
         });
       } catch (error) {
-        return _res.status(400).json({
+        return _res.status(401).json({
             success: false,
-            status: 'Error! 200'
+            message: 'Error! 200'
         })
       }
     })(_req, _res, _next);
