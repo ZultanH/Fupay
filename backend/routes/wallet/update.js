@@ -1,4 +1,4 @@
-const WalletModel = require('../../models/Customer')
+const WalletModel = require('../../models/Wallet')
 const dotenv = require('dotenv')
 dotenv.config({path: '../../config.env'})
 
@@ -17,11 +17,15 @@ const post = async (_req, _res) => {
             amount: amount * 100,
             paymentMethod,
         }
-        await WalletModel.updateOne({customer: customer._id}, {$inc: {amount: amount * 100}}) // find wallet by customer id, increment amount by deposit amount, account for format in cents
-        await WalletModel.updateOne({customer: customer._id}, {
-            $push: {
-            transactons: newTransaction,
+        console.log('Amount', amount)
+        await WalletModel.updateOne({Customer: customer._id}, {$inc: {amount: amount * 100}}) // find wallet by customer id, increment amount by deposit amount, account for format in cents
+        await WalletModel.updateOne({Customer: customer._id}, {$push: {
+            transactions: newTransaction,
         }})
+        return _res.status(200).json({
+            success: true,
+            message: 'Successfully updated wallet',
+        })
     }catch (error) {
         console.error(error)
         return _res.status(400).json({status: 'fail', message: 'Error!'})

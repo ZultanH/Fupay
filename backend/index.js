@@ -14,7 +14,7 @@ dontenv.config({path: './config.env'})
 const uri = process.env.MONGODB_URI
 require('./helpers/passport');
 
-mongoose.connect(uri, { useUnifiedTopology: true, useNewUrlParser: true });
+mongoose.connect(uri);
 const connection = mongoose.connection;
 
 connection.once("open", function() {
