@@ -8,13 +8,10 @@ const post = async (_req, _res) => {
         const {amount, paymentMethod, paymentDetails} = _req.body
         const foundWallet = await WalletModel.findOne({Customer: customer._id})
         if (!foundWallet) {
-            return _res.status(400).json({status: 'fail', message: 'Could not find wallet!'})
+            return _res.status(400).json({success: false, message: 'Could not find wallet!'})
         }
         if (amount > process.env.DEPOSIT_LIMIT) {
-            return _res.status(400).json({status: 'fail', message:'Deposit amount exceeds limit!'})
-        }
-        if (foundWallet.paymentDetails !== paymentDetails) { // if payment details (acc no# )
-            return _res.status(400).json({status: 'fail', message: 'Incorrect payment details!'})
+            return _res.status(400).json({success: false, message:'Deposit amount exceeds limit!'})
         }
         await WalletModel.updateOne({customer: _id}, {$inc: {amount: amount}}) // find wallet by customer id, increment amount by deposit amount
     }catch (error) {
