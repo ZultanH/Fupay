@@ -1,13 +1,12 @@
-import React, { useContext, useState } from "react";
-import Link from "@material-ui/core/Link";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import { DataContext } from "../Providers/DataProvider";
 import Title from "./Title";
 import Button from "@material-ui/core/Button";
 import { format } from "date-fns";
 import moment from "moment";
 import { getCustomer, getToken } from '../Utils/Common'
+import axios from 'axios'
 
 const useStyles = makeStyles({
   depositContext: {
@@ -27,12 +26,16 @@ const useStyles = makeStyles({
 
 export default function Deposits() {
   const classes = useStyles();
-  const [customer, setCustomer] = useState(getCustomer())
-  const { addRandomExpense } = useContext(DataContext);
-
+  const [total, setTotal] = useState(getCustomer().wallet.amount / 100)
+  
   const handleBalanceRefresh = () => {
     const apiToken = getToken()
-
+    axios.get('http://localhost:4000/api/customer/info', {
+      headers: {'Authorization': `Bearer ${apiToken}`}
+    }).then(response => {
+      const latestBalance = response.data.wallet.amount
+      setTotal(latestBalance / 100)
+    })
   }
   
   return (
@@ -45,7 +48,7 @@ export default function Deposits() {
           variant="outlined"
           color="primary"
           onClick={() => {
-            addRandomExpense();
+            window.location = '/update'
           }}
         >
           Add funds
@@ -55,9 +58,7 @@ export default function Deposits() {
           edge="end"
           variant="outlined"
           color="primary"
-          onClick={() => {
-            addRandomExpense();
-          }}
+          onClick={handleBalanceRefresh}
         >
           Refresh Balance
         </Button>
@@ -65,7 +66,7 @@ export default function Deposits() {
       <div className={classes.balance}>
         <div className={classes.balanceItem}>
           <Typography component="p" variant="h3">
-            ${customer.wallet.amount.toLocaleString()}
+            ${total.toLocaleString()}
           </Typography>
           <Typography color="textSecondary" className={classes.depositContext}>
             {format(moment().valueOf(), "MMMM do, y")}
