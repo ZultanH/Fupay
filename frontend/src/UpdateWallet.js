@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
@@ -51,7 +51,15 @@ export default function UpdateWallet() {
         onChange: handleChange
       }
     }
+    
+    useEffect(() => {
+      const token = getToken()
   
+      if (!token) {
+        window.location = '/login';
+      }
+    }, [])
+
     const amount = useFormInput('')
     const paymentMethod = useFormInput('')
   
@@ -68,9 +76,10 @@ export default function UpdateWallet() {
       },  {headers: {Authorization: `Bearer ${token}`}}).then(response => {
         setLoading(false);
         if (response.data.success) {
+          window.flash('Submitting deposit!')
           setTimeout(() => {
             window.location = '/dashboard'
-          }, 3000)
+          }, 4000)
         }
       }).catch(error => {
         setLoading(false);
@@ -119,6 +128,29 @@ export default function UpdateWallet() {
                   <MenuItem value={"BankAccount"}>Bank Account</MenuItem>
                   <MenuItem value={"DirectDeposit"}>Direct Deposit</MenuItem>
                 </Select>
+                {paymentMethod.value === 'BankAccount' ? 
+                  <div>
+                    <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="cardnumber"
+                    label="Debit Card Number"
+                    id="cardnumber"
+                  />
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="ccv"
+                    label="CCV"
+                    id="ccv"
+                  />
+                  </div>
+                : null
+                }
                 <Button
                   fullWidth
                   variant="contained"
@@ -127,7 +159,7 @@ export default function UpdateWallet() {
                   disabled={loading}
                   onClick={handleSubmit}
                 >
-                  {loading ? 'Loading...' : 'Submit'}
+                {loading ? 'Loading...' : 'Submit'}
                 </Button>
               </form>
             </Grid>

@@ -72,10 +72,14 @@ export function SignIn() {
     axios.post('http://localhost:4000/api/auth/login', { email: email.value, password: password.value }).then(response => {
       setLoading(false);
       setCustomerToken(response.data.token);
-      window.location = '/profile'
+      window.flash('Successfully signed in!')
+      setTimeout(() => {
+        window.location = '/profile'
+      }, 4000)
     }).catch(error => {
       setLoading(false);
       if (error.response.status === 401)
+        window.flash('Invalid login / password!', 'error')
         setError(error.response.data.message)
     })
   }
@@ -110,6 +114,7 @@ export function SignIn() {
                 id="email"
                 label="Email Address"
                 name="email"
+                disabled={loading}
                 autoComplete="email"
                 autoFocus
                 {...email}
@@ -120,6 +125,7 @@ export function SignIn() {
                 required
                 fullWidth
                 name="password"
+                disabled={loading}
                 label="Password"
                 type="password"
                 id="password"

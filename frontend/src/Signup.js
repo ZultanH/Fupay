@@ -79,13 +79,15 @@ export function SignUp() {
     }).then(response => {
       setLoading(false);
       if (response.data.success) {
+        window.flash('Successfully created account!')
         setTimeout(() => {
             window.location = '/login'
-        }, 3000)
+        }, 4000)
       }
     }).catch(error => {
       setLoading(false);
       if (error.response.status === 400)
+        window.flash('Error creating account!', 'error')
         setError(error.response.data.message)
     })
   }
@@ -117,6 +119,7 @@ export function SignUp() {
                 margin="normal"
                 required
                 fullWidth
+                disabled={loading}
                 id="email"
                 label="Email Address"
                 name="email"
@@ -129,6 +132,7 @@ export function SignUp() {
                 margin="normal"
                 required
                 fullWidth
+                disabled={loading}
                 name="firstname"
                 label="First name"
                 id="firstname"
@@ -139,6 +143,7 @@ export function SignUp() {
                 margin="normal"
                 required
                 fullWidth
+                disabled={loading}
                 name="lastname"
                 label="Last name"
                 id="lastname"
@@ -149,6 +154,7 @@ export function SignUp() {
                 margin="normal"
                 required
                 fullWidth
+                disabled={loading}
                 name="password"
                 label="Password"
                 type="password"

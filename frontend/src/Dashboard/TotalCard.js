@@ -5,7 +5,7 @@ import Title from "./Title";
 import Button from "@material-ui/core/Button";
 import { format } from "date-fns";
 import moment from "moment";
-import { getCustomer, getToken } from '../Utils/Common'
+import { getCustomer, getToken, removeCustomerSession } from '../Utils/Common'
 import axios from 'axios'
 
 const useStyles = makeStyles({
@@ -26,18 +26,30 @@ const useStyles = makeStyles({
 
 export default function Deposits() {
   const classes = useStyles();
-  const [total, setTotal] = useState(getCustomer().wallet.amount / 100)
+  const customer = getCustomer()
+  const currentTotal = customer && customer.wallet && customer.wallet.amount ? customer.wallet.amount / 100 : 0
+  const [total, setTotal] = useState(currentTotal)
   
   const handleBalanceRefresh = () => {
     const apiToken = getToken()
     axios.get('http://localhost:4000/api/customer/info', {
       headers: {'Authorization': `Bearer ${apiToken}`}
     }).then(response => {
-      const latestBalance = response.data.wallet.amount
+      const latestBalance = response.data && response.data.wallet ? response.data.wallet.amount : 0
       setTotal(latestBalance / 100)
     })
   }
   
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you wish to logout?')) {
+      window.flash('Logging out...')
+      setTimeout(() => {
+        removeCustomerSession()
+        window.location = '/login'
+      }, 4000)
+    }
+  }
+
   return (
     <React.Fragment>
       <div className={classes.toolbar}>
@@ -61,6 +73,15 @@ export default function Deposits() {
           onClick={handleBalanceRefresh}
         >
           Refresh Balance
+        </Button>
+
+        <Button
+          edge="end"
+          variant="outlined"
+          color="primary"
+          onClick={handleLogout}
+        >
+          Logout
         </Button>
       </div>
       <div className={classes.balance}>

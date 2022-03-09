@@ -6,8 +6,8 @@ import { SignUp } from './Signup';
 import { Dashboard } from "./Dashboard/Dashboard";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { useTheme } from "./theme";
-import { DataProvider } from "./Providers/DataProvider";
-
+import {Flash} from './Components/Flash';
+import Bus from './Utils/Bus'
 import Customer from "./People/Customer";
 import UpdateWallet from './UpdateWallet'
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -15,11 +15,13 @@ import DateFnsUtils from "@date-io/date-fns";
 
 export default function App() {
   const [currentTheme, setCurrentTheme] = useTheme();
+
+  window.flash = (message, type="success") => Bus.emit('flash', ({message, type}));
   return (
     <>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <Flash />
         <ThemeProvider theme={currentTheme}>
-            <DataProvider>
               <Router>
                 <div>
                   <AppBarAndDrawer
@@ -50,7 +52,6 @@ export default function App() {
                   </Switch>
                 </div>
               </Router>
-            </DataProvider>
         </ThemeProvider>
       </MuiPickersUtilsProvider>
     </>

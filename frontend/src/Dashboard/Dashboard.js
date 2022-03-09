@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import clsx from "clsx";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
@@ -6,6 +6,7 @@ import TotalCard from "./TotalCard";
 import { drawerWidth } from "../AppBarAndDrawer/AppBarAndDrawer";
 import { makeStyles } from "@material-ui/core/styles";
 import Content from "./Content";
+import { getToken } from '../Utils/Common';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -60,6 +61,15 @@ const useStyles = makeStyles((theme) => ({
 export function Dashboard() {
   const classes = useStyles();
   const balancePaper = clsx(classes.paper, classes.balanceCard);
+
+  useEffect(() => {
+    const token = getToken()
+
+    if (!token) {
+      window.location = '/login';
+    }
+  }, [])
+
   return (
     <>
       <Content>
